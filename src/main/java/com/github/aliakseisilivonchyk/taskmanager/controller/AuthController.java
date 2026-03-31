@@ -18,8 +18,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public JwtAuthResponse register(@RequestBody SignUpRequest signUpRequest) {
-        return authService.register(signUpRequest);
+    public void register(@RequestBody SignUpRequest signUpRequest) {
+        authService.register(signUpRequest);
     }
 
     @PostMapping("/login")

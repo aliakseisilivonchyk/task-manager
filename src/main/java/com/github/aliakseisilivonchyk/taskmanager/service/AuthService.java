@@ -21,7 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public JwtAuthResponse register(SignUpRequest signUpRequest) {
+    public void register(SignUpRequest signUpRequest) {
         User user = new User();
         user.setUsername(signUpRequest.username());
         user.setEmail(signUpRequest.email());
@@ -29,8 +29,6 @@ public class AuthService {
         user.setRole(signUpRequest.role());
 
         userService.create(user);
-
-        return new JwtAuthResponse(jwtService.generateToken(user));
     }
 
     public JwtAuthResponse login(SignInRequest signInRequest) {
