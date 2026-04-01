@@ -1,4 +1,9 @@
 package com.github.aliakseisilivonchyk.taskmanager.dto;
 
-public record SignInRequest(String username, String password) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Запрос на аутентификацию")
+public record SignInRequest(
+        @Schema(description = "Логин", example = "admin") String username,
+        @Schema(description = "Пароль", example = "secret") String password) {
 }
