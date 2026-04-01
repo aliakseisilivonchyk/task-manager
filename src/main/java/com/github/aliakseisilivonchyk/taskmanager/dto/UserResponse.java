@@ -2,5 +2,5 @@ package com.github.aliakseisilivonchyk.taskmanager.dto;
 
 import com.github.aliakseisilivonchyk.taskmanager.model.UserRole;
 
-public record SignUpRequest(String username, String email, String password, UserRole role) {
+public record UserResponse(Long id, String username, String email, UserRole role) {
 }
