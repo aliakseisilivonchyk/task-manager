@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: task-manager
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+    ports:
+      - '5432:5432'
+  pgadmin:
+    image: 'dpage/pgadmin4:latest'
+    environment:
+      - 'PGADMIN_DEFAULT_EMAIL=user@test.com'
+      - 'PGADMIN_DEFAULT_PASSWORD=secret'
+    ports:
+      - '80:80'
+  taskmanager:
+    build: .
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: task-manager
+      DB_USERNAME: user
+      DB_PASSWORD: secret
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
