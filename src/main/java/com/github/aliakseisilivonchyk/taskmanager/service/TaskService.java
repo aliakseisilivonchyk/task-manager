@@ -21,7 +21,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
 
-    public void create(TaskRequest taskRequest) {
+    public TaskResponse create(TaskRequest taskRequest) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User author = (User) userService.loadUserByUsername(userDetails.getUsername());
         User assignee = userService.findById(taskRequest.assignee()).get();
@@ -30,14 +30,14 @@ public class TaskService {
         task.setAuthor(author);
         task.setAssignee(assignee);
 
-        taskRepository.save(task);
+        return convertToDto(taskRepository.save(task));
     }
 
     public Optional<TaskResponse> findById(Long id) {
         return taskRepository.findById(id).map(TaskService::convertToDto);
     }
 
-    public void update(Long id, TaskRequest taskRequest) {
+    public TaskResponse update(Long id, TaskRequest taskRequest) {
         Task task = taskRepository.findById(id).get();
         task.setTitle(taskRequest.title());
         task.setDescription(taskRequest.description());
@@ -47,7 +47,7 @@ public class TaskService {
         User assignee = userService.findById(taskRequest.assignee()).get();
         task.setAssignee(assignee);
 
-        taskRepository.save(task);
+        return convertToDto(taskRepository.save(task));
     }
 
     public void delete(Long id) {

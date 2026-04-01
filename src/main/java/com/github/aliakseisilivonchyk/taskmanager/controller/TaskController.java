@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +27,8 @@ public class TaskController {
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Создать задачу")
-    public void create(@RequestBody TaskRequest taskRequest) {
-        taskService.create(taskRequest);
+    public ResponseEntity<TaskResponse> create(@RequestBody TaskRequest taskRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(taskRequest));
     }
 
     @GetMapping("/{id}")
@@ -39,15 +41,16 @@ public class TaskController {
     @PutMapping("/{id}")
     @PreAuthorize("@taskService.isCurrentUserAuthor(#id) or hasRole('ADMIN')")
     @Operation(summary = "Обновить задачу")
-    public void update(@Schema(description = "ID задачи") @PathVariable Long id, @RequestBody TaskRequest taskRequest) {
-        taskService.update(id, taskRequest);
+    public TaskResponse update(@Schema(description = "ID задачи") @PathVariable Long id, @RequestBody TaskRequest taskRequest) {
+        return taskService.update(id, taskRequest);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@taskService.isCurrentUserAuthor(#id) or hasRole('ADMIN')")
     @Operation(summary = "Удалить задачу")
-    public void delete(@Schema(description = "ID задачи") @PathVariable Long id) {
+    public ResponseEntity<Void> delete(@Schema(description = "ID задачи") @PathVariable Long id) {
         taskService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
