@@ -27,6 +27,9 @@ docker compose up -d
 
 ## Request examples
 
+> [!NOTE]
+> Swagger UI endpoint (/swagger-ui/index.html) can be used as a source of request examples.
+
 1) Register new user
 
 ```
