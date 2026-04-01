@@ -36,7 +36,7 @@ public class TaskController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Получить задачу по ID")
     public TaskResponse findById(@Schema(description = "ID задачи") @PathVariable Long id) {
-        return taskService.findById(id).orElse(null);
+        return taskService.findById(id);
     }
 
     @PutMapping("/{id}")
