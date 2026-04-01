@@ -12,7 +12,6 @@ import java.util.Date;
 public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
-
         String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().get();
         Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
 

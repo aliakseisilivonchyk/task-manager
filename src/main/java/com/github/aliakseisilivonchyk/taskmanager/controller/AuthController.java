@@ -8,6 +8,7 @@ import com.github.aliakseisilivonchyk.taskmanager.service.AuthService;
 import com.github.aliakseisilivonchyk.taskmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,13 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Регистрация пользователя")
-    public ResponseEntity<UserResponse> register(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(userRequest));
     }
 
     @PostMapping("/login")
     @Operation(summary = "Вход (получение JWT)")
-    public JwtAuthResponse login(@RequestBody SignInRequest signInRequest) {
+    public JwtAuthResponse login(@Valid @RequestBody SignInRequest signInRequest) {
         return authService.login(signInRequest);
     }
 }

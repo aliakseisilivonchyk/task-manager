@@ -6,6 +6,7 @@ import com.github.aliakseisilivonchyk.taskmanager.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class TaskController {
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Создать задачу")
-    public ResponseEntity<TaskResponse> create(@RequestBody TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> create(@Valid @RequestBody TaskRequest taskRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(taskService.create(taskRequest));
     }
 
@@ -41,7 +42,7 @@ public class TaskController {
     @PutMapping("/{id}")
     @PreAuthorize("@taskService.isCurrentUserAuthor(#id) or hasRole('ADMIN')")
     @Operation(summary = "Обновить задачу")
-    public TaskResponse update(@Schema(description = "ID задачи") @PathVariable Long id, @RequestBody TaskRequest taskRequest) {
+    public TaskResponse update(@Schema(description = "ID задачи") @PathVariable Long id, @Valid @RequestBody TaskRequest taskRequest) {
         return taskService.update(id, taskRequest);
     }
 
