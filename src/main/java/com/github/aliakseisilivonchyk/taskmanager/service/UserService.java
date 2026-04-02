@@ -17,6 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
+    private static final String USER_NOT_FOUND_MESSAGE = "Пользователь не найден.";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -37,7 +39,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND_MESSAGE));
     }
 
     private static UserResponse convertToDto(User user) {

@@ -23,6 +23,10 @@ public class TaskService {
 
     private static final String TASK_NOT_FOUND_MESSAGE = "Задача не найдена.";
     private static final String INCORRECT_ASSIGNEE_MESSAGE = "Исполнитель с таким ID не найден.";
+    private static final String STATUS_ATTRIBUTE_NAME = "status";
+    private static final String ASSIGNEE_ATTRIBUTE_NAME = "assignee";
+    private static final String AUTHOR_ATTRIBUTE_NAME = "author";
+    private static final String ID_ATTRIBUTE_NAME = "id";
 
     private final TaskRepository taskRepository;
     private final UserService userService;
@@ -69,19 +73,19 @@ public class TaskService {
 
         if (status.isPresent()) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("status"), status.get())
+                    criteriaBuilder.equal(root.get(STATUS_ATTRIBUTE_NAME), status.get())
             );
         }
 
         if (assigneeId.isPresent()) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("assignee").get("id"), assigneeId.get())
+                    criteriaBuilder.equal(root.get(ASSIGNEE_ATTRIBUTE_NAME).get(ID_ATTRIBUTE_NAME), assigneeId.get())
             );
         }
 
         if (authorId.isPresent()) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("author").get("id"), authorId.get())
+                    criteriaBuilder.equal(root.get(AUTHOR_ATTRIBUTE_NAME).get(ID_ATTRIBUTE_NAME), authorId.get())
             );
         }
 

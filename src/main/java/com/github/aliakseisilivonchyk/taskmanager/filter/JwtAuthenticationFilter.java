@@ -24,6 +24,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String AUTH_HEADER_BEARER = "Bearer ";
+    private static final String USERNAME_CLAIM = "username";
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
@@ -31,13 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
+        String authHeader = request.getHeader(AUTH_HEADER);
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_HEADER_BEARER)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwtString = authHeader.substring("Bearer ".length());
+        String jwtString = authHeader.substring(AUTH_HEADER_BEARER.length());
         Claims jwtClaims = Jwts.parser()
                 .unsecured()
                 .build()
@@ -45,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .getPayload();
 
         if (jwtService.isTokenValid(jwtClaims)) {
-            String usernameClaim = jwtClaims.get("username", String.class);
+            String usernameClaim = jwtClaims.get(USERNAME_CLAIM, String.class);
             UserDetails userDetails = userDetailsService.loadUserByUsername(usernameClaim);
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
