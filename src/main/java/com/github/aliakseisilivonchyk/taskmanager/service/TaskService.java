@@ -34,8 +34,12 @@ public class TaskService {
     public TaskResponse create(TaskRequest taskRequest) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User author = (User) userService.loadUserByUsername(userDetails.getUsername());
-        User assignee = userService.findById(taskRequest.assignee())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, INCORRECT_ASSIGNEE_MESSAGE));
+
+        User assignee = null;
+        if (taskRequest.assignee() != null) {
+            assignee = userService.findById(taskRequest.assignee())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, INCORRECT_ASSIGNEE_MESSAGE));
+        }
 
         Task task = convertToModel(taskRequest);
         task.setAuthor(author);
@@ -57,8 +61,11 @@ public class TaskService {
         task.setStatus(taskRequest.status());
         task.setPriority(taskRequest.priority());
 
-        User assignee = userService.findById(taskRequest.assignee())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, INCORRECT_ASSIGNEE_MESSAGE));
+        User assignee = null;
+        if (taskRequest.assignee() != null) {
+            assignee = userService.findById(taskRequest.assignee())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, INCORRECT_ASSIGNEE_MESSAGE));
+        }
         task.setAssignee(assignee);
 
         return convertToDto(taskRepository.save(task));
@@ -114,6 +121,7 @@ public class TaskService {
     private static TaskResponse convertToDto(Task task) {
         return new TaskResponse(task.getId(), task.getTitle(), task.getDescription(),
                 task.getStatus(), task.getPriority(), task.getAuthor().getId(),
-                task.getAssignee().getId(), task.getCreatedAt(), task.getUpdatedAt());
+                task.getAssignee() == null ? null : task.getAssignee().getId(),
+                task.getCreatedAt(), task.getUpdatedAt());
     }
 }
