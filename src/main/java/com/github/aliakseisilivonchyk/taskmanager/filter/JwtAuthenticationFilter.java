@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTH_HEADER = "Authorization";
     private static final String AUTH_HEADER_BEARER = "Bearer ";
     private static final String USERNAME_CLAIM = "username";
+    private static final String CREDENTIALS_EXPIRED_MESSAGE = "Время действия токена истекло.";
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -56,8 +58,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     null, userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } else {
+            throw new CredentialsExpiredException(CREDENTIALS_EXPIRED_MESSAGE);
+        }
     }
 }
