@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
 
+    @Transactional
     public TaskResponse create(TaskRequest taskRequest) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User author = (User) userService.loadUserByUsername(userDetails.getUsername());
@@ -53,6 +55,7 @@ public class TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException(TASK_NOT_FOUND_MESSAGE));
     }
 
+    @Transactional
     public TaskResponse update(Long id, TaskRequest taskRequest) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(TASK_NOT_FOUND_MESSAGE));
@@ -68,9 +71,10 @@ public class TaskService {
         }
         task.setAssignee(assignee);
 
-        return convertToDto(taskRepository.save(task));
+        return convertToDto(task);
     }
 
+    @Transactional
     public void delete(Long id) {
         taskRepository.deleteById(id);
     }
