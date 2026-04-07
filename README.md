@@ -7,7 +7,8 @@ RESTful service to manage tasks based on Java and Spring Boot.
 - tasks creation,
 - tasks modification,
 - tasks assigning,
-- tasks filtering.
+- tasks filtering,
+- configure authentication and authorization with Spring Security and custom JWT tokens.
 
 ## Getting started
 
