@@ -1,6 +1,7 @@
 package com.github.aliakseisilivonchyk.taskmanager.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +19,10 @@ public class JwtService {
     private static final String ROLE_CLAIM = "role";
     private static final String EXPIRATION_TIME_CLAIM = "expirationTime";
 
+    private static final JwtParser JWT_PARSER = Jwts.parser()
+            .unsecured()
+            .build();
+
     @Value("${jwt.token.expiration}")
     private Duration jwtTokenExpiration;
 
@@ -33,7 +38,17 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean isTokenValid(Claims claims) {
-        return claims.get(EXPIRATION_TIME_CLAIM, Date.class).after(new Date());
+    public String getUsernameTokenClaim(String jwtString) {
+        return getTokenClaims(jwtString).get(USERNAME_CLAIM, String.class);
+    }
+
+    public Date getExpirationTimeTokenClaim(String jwtString) {
+        return getTokenClaims(jwtString).get(EXPIRATION_TIME_CLAIM, Date.class);
+    }
+
+    private static Claims getTokenClaims(String jwtString) {
+        return JWT_PARSER
+                .parseUnsecuredClaims(jwtString)
+                .getPayload();
     }
 }

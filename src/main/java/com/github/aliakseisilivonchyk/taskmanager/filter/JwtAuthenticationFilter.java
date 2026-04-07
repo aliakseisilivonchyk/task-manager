@@ -1,8 +1,6 @@
 package com.github.aliakseisilivonchyk.taskmanager.filter;
 
 import com.github.aliakseisilivonchyk.taskmanager.service.JwtService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String AUTH_HEADER = "Authorization";
     private static final String AUTH_HEADER_BEARER = "Bearer ";
-    private static final String USERNAME_CLAIM = "username";
     private static final String CREDENTIALS_EXPIRED_MESSAGE = "Время действия токена истекло.";
 
     private final JwtService jwtService;
@@ -44,14 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String jwtString = authHeader.substring(AUTH_HEADER_BEARER.length());
-        Claims jwtClaims = Jwts.parser()
-                .unsecured()
-                .build()
-                .parseUnsecuredClaims(jwtString)
-                .getPayload();
 
-        if (jwtService.isTokenValid(jwtClaims)) {
-            String usernameClaim = jwtClaims.get(USERNAME_CLAIM, String.class);
+        if (isTokenNonExpired(jwtService.getExpirationTimeTokenClaim(jwtString))) {
+            String usernameClaim = jwtService.getUsernameTokenClaim(jwtString);
             UserDetails userDetails = userDetailsService.loadUserByUsername(usernameClaim);
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
@@ -63,5 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             throw new CredentialsExpiredException(CREDENTIALS_EXPIRED_MESSAGE);
         }
+    }
+
+    private boolean isTokenNonExpired(Date expirationTime) {
+        return expirationTime.after(new Date());
     }
 }
